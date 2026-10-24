@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>台灣縣市人口變化 1974–2025</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main>
+    <h1>台灣 8 縣市年底人口數變化</h1>
+    <div class="year" id="year-label" aria-live="polite">—</div>
+
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+
+    <div class="controls">
+      <button id="play-btn" type="button">暫停</button>
+      <input id="year-slider" type="range" min="1974" max="2025" step="1" value="1974" aria-label="年份">
+      <label class="toggle">
+        <input id="sort-toggle" type="checkbox">
+        依人口排序
+      </label>
+    </div>
+    <p class="note">資料來源：taiwan_population_1974_2025.json（各年年底人口數）</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
