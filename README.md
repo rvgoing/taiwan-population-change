@@ -31,3 +31,28 @@ python app.py
 
 - `GET /` — 首頁
 - `GET /api/population` — 回傳 JSON 檔內容（每年一筆，含 `Year_ROC`、`Year_AD` 與各縣市人口數）
+
+## 部署到 Render
+
+repo 已包含 Render 所需設定：
+
+- `render.yaml`：Blueprint 設定（Python web service，`gunicorn app:app` 啟動，健康檢查 `/api/population`）
+- `requirements.txt`：含正式環境用的 `gunicorn`
+- `.python-version`：指定 Python 3.12
+
+### 方法一：Blueprint（建議）
+
+1. 登入 [Render Dashboard](https://dashboard.render.com/)，點 **New → Blueprint**
+2. 連結這個 GitHub repo，Render 會讀取 `render.yaml` 自動建立服務
+3. 部署完成後，開啟 Render 提供的 `https://<服務名稱>.onrender.com` 網址
+
+### 方法二：手動建立 Web Service
+
+1. **New → Web Service**，選擇這個 repo
+2. 設定：
+   - Runtime：`Python 3`
+   - Build Command：`pip install -r requirements.txt`
+   - Start Command：`gunicorn app:app --bind 0.0.0.0:$PORT`
+3. 按 **Create Web Service**
+
+> 免費方案的服務閒置一段時間後會休眠，下次開啟需要等待約數十秒喚醒。
