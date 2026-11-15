@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="互動探索臺灣八個縣市在 1974–2025 年的年底人口變化。">
+  <title>台灣 8 縣市人口變化｜1974–2025</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script defer src="/static/app.js"></script>
+</head>
+<body>
+  <main>
+    <header class="heading">
+      <h1>台灣 8 縣市年底人口變化</h1>
+      <p class="subtitle">1974–2025 · 固定顏色追蹤各縣市，切換排序觀察人口排名</p>
+    </header>
+    <section class="panel" aria-label="人口統計動畫">
+      <div class="year" id="year-label" aria-live="off">資料載入中…</div>
+      <div id="status" class="status" role="alert" hidden></div>
+      <button id="retry-btn" type="button" hidden>重新載入資料</button>
+      <div class="chart-wrap"><canvas id="chart" role="img" aria-label="1974 至 2025 年八縣市人口橫條圖"></canvas></div>
+      <div class="controls">
+        <button id="play-btn" type="button" disabled>播放</button>
+        <label for="year-slider" class="sr-only">選擇年份</label>
+        <input id="year-slider" type="range" min="1974" max="2025" step="1" value="1974" disabled aria-label="年份">
+        <label class="toggle"><input id="sort-toggle" type="checkbox" disabled> 依人口排序</label>
+      </div>
+      <p class="note">橫軸為年底人口數（人），所有年份使用相同刻度，以利比較。資料：<a href="/data/taiwan_population_1974_2025.json">人口 JSON</a>。</p>
+    </section>
+  </main>
+</body>
+</html>

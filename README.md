@@ -1,58 +1,42 @@
 # taiwan-population-change
 
-以動畫直條圖呈現台灣 8 個縣市（臺北市、新北市、桃園市、臺中市、臺南市、高雄市、屏東縣、宜蘭縣）1974–2025 年的年底人口數變化。
-
-資料只來自 repo 根目錄的 `taiwan_population_1974_2025.json`。
+以動畫呈現臺灣八縣市 1974–2025 年的年底人口數，使用 Chart.js 與靜態 JSON。
+Vercel 以純靜態 HTML/JS/JSON 部署，不需要 Flask 或常駐伺服器；Render 保留 Flask 相容服務。
 
 ## 功能
 
-- 直條圖：X 軸為縣市、Y 軸為人口數（千分位格式），Y 軸最大值固定為所有年份中的最大人口數
-- 年份滑桿（1974–2025）與播放／暫停按鈕，並顯示目前年份
-- 開啟頁面自動播放，每 0.8 秒前進一年，播到 2025 後從 1974 重新開始
-- 拖動滑桿時自動暫停
-- 「依人口排序」開關（預設關閉）：關閉時依固定順序排列，開啟時依當年人口由多到少排序
+- 橫向長條圖顯示年度人口數；縣市採固定顏色，排序後仍能辨識
+- 年份滑桿、播放／暫停、每 0.8 秒前進一年；比較刻度固定
+- 若資料、Chart.js 或 HTTP 回應出錯，顯示錯誤提示與重試按鈕
+- 尊重系統「減少動態效果」設定，仍可手動播放
 
-## 本機啟動
+## 資料
 
-需要 Python 3.9 以上。
+唯一人口資料檔為 `public/data/taiwan_population_1974_2025.json`，涵蓋 1974–2025 年。
+目前專案尚未完整附上各年度原始統計機關、資料來源與行政區改制對照，尚不能視作完成官方統計驗證。
 
+## Vercel（純靜態）
+
+- Framework Preset: Other（`vercel.json` 設定 framework 為 null）
+- Output Directory: `public`
+- Build Command: 留空；不需要 Node、Python、Flask 或 Serverless Function
+- Production Branch: `main`
+- HTML: `/`；資料：`/data/taiwan_population_1974_2025.json`
+- Git 整合如已開啟，推送 main 將觸發部署；在 Vercel Dashboard 驗證 Production 狀態。
+
+## Render（維持原服務）
+
+`render.yaml` 仍使用 Flask/Gunicorn。相同 HTML、CSS、JS 與 JSON 由 Flask 提供。
+原 `/api/population` 保留供舊客戶端及 Render 健康檢查使用。
+
+本機測試：
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
+python -m unittest discover -s tests -p 'test_*.py' -v
+node --test tests/*.test.cjs
 python app.py
 ```
 
-開啟瀏覽器前往 <http://127.0.0.1:5000/>。
-
-前端的 Chart.js（4.4.1）由 jsDelivr CDN 載入，瀏覽器需能連上網路。
-
-## API
-
-- `GET /` — 首頁
-- `GET /api/population` — 回傳 JSON 檔內容（每年一筆，含 `Year_ROC`、`Year_AD` 與各縣市人口數）
-
-## 部署到 Render
-
-repo 已包含 Render 所需設定：
-
-- `render.yaml`：Blueprint 設定（Python web service，`gunicorn app:app` 啟動，健康檢查 `/api/population`）
-- `requirements.txt`：含正式環境用的 `gunicorn`
-- `.python-version`：指定 Python 3.12
-
-### 方法一：Blueprint（建議）
-
-1. 登入 [Render Dashboard](https://dashboard.render.com/)，點 **New → Blueprint**
-2. 連結這個 GitHub repo，Render 會讀取 `render.yaml` 自動建立服務
-3. 部署完成後，開啟 Render 提供的 `https://<服務名稱>.onrender.com` 網址
-
-### 方法二：手動建立 Web Service
-
-1. **New → Web Service**，選擇這個 repo
-2. 設定：
-   - Runtime：`Python 3`
-   - Build Command：`pip install -r requirements.txt`
-   - Start Command：`gunicorn app:app --bind 0.0.0.0:$PORT`
-3. 按 **Create Web Service**
-
-> 免費方案的服務閒置一段時間後會休眠，下次開啟需要等待約數十秒喚醒。
+GitHub Actions 於每次推送與 PR 執行 Python / Node 測試。Chart.js 4.4.1 從 jsDelivr 載入，需有網路連線。
